@@ -1,0 +1,101 @@
+﻿@{
+    ViewData["Title"] = "Orders";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container-fluid mt-5">
+    <div class="d-flex justify-content-between align-items-sm-center flex-column flex-sm-row mb-4">
+        <div class="mr-4 mb-3 mb-sm-0">
+            <h1 class="mb-0">Orders</h1>
+        </div>
+    </div>
+    <div class="card card-waves mb-4">
+        <div class="card-header">Available Orders</div>
+        <div class="card-body">
+            <div class="datatable">
+                <div class="row">
+
+                    <div class="col-lg-2">
+                        <ejs-textbox id="shopNameFilter" placeholder="Filter by ShopName"
+                            input="shopNameFilterChanged">
+                        </ejs-textbox>
+                    </div>
+                </div>
+            </div>
+            <br>
+            <div class="datatable">
+                <ejs-grid id="Grid" created="created" rowHeight="45" width="100%">
+                    <e-grid-pagesettings pageSize="15" pageSizes="new object[3]{15,50,100}"></e-grid-pagesettings>
+                    <e-grid-columns>
+                        <e-grid-column field="shopName" headerText="ShopName"></e-grid-column>
+                        <e-grid-column field="productsCount" headerText="ProductsCount"></e-grid-column>
+                        <e-grid-column field="totalPrice" headerText="TotalPrice" template="#templatePrice">
+                            <e-content-template>
+                                <div id="templatePrice" hidden>${totalPrice} USDT</div>
+                            </e-content-template>
+                        </e-grid-column>
+                        <e-grid-column field="status" headerText="Status"></e-grid-column>
+                        <e-grid-column headerTextAlign="Right" textAlign="Right" field="Id" headerText="Actions" template="#template">
+                            <e-content-template>
+                            <script type="text/x-template" id="template" hidden>
+                                ${if(status == "Waiting")}
+                                <a data-toggle="modal" href="#" data-target="#dialogConfirm" onclick="confirmOpen(${id})">Confirm</a>
+                                <text> | </text>
+                                <a data-toggle="modal" href="#" data-target="#dialogDecline" onclick="declineOpen(${id})">Decline</a>
+                                ${else}
+                                ${/if}
+                            </script>
+                            </e-content-template>
+                        </e-grid-column>
+                    </e-grid-columns>
+                </ejs-grid>
+            </div>
+        </div>
+    </div>
+</div>
+
+@{ await Html.RenderPartialAsync("PartialConfirm"); }
+@{ await Html.RenderPartialAsync("PartialDecline"); }
+<script>
+    var shopNameFilter = "";
+
+    function created()
+    {
+        getOrders();
+    }
+  
+    function shopNameFilterChanged(e){
+        shopNameFilter = e.value;
+        getOrders();
+    }
+
+    function getOrders() {
+        let grid = document.getElementById('Grid').ej2_instances[0];
+        fetch(`/Order/Filter?shopName=${shopNameFilter}`).then((response) => response.json())
+                                                  .then((data) => grid.dataSource = data.items);
+    }
+
+    function confirmOpen(ModelId) {
+        let id = document.getElementById("confirmId");
+        id.value = ModelId;
+    }
+    
+    function declineOpen(ModelId) {
+        let id = document.getElementById("declineId");
+        id.value = ModelId;
+    }
+    
+    function declineModel() {
+        let id = document.getElementById("declineId");
+        fetch(`/Order/Decline?id=${id.value}`, {
+                method: 'PUT'
+            }).then(response =>  getOrders())
+    }
+
+    function confirmModel() {
+        let id = document.getElementById("confirmId");
+        fetch(`/Order/Confirm?id=${id.value}`, {
+                method: 'PUT'
+            }).then(response =>  getOrders())
+    }
+
+</script>

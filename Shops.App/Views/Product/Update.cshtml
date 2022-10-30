@@ -1,0 +1,66 @@
+﻿@model Shops.App.Models.Product.UpdateProductOpenModel
+
+@{
+    ViewData["Title"] = "Update Shop";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="card card-waves">
+    <div class="card-header">
+        Update ApplicationTimeZone
+    </div>
+    <div class="card-body">
+        <div class="datatable">
+            <div class="row">
+                <div class="col-lg-12">
+                    <input hidden id="updateId" value="@Model.Id"/>
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input class="e-input" placeholder="Enter name" value="@Model.Color" id="updateName">
+                    </div>
+                    <div class="form-group">
+                        <label>Color</label>
+                        <input type="text" class="e-input" placeholder="Enter Color" value="@Model.Color" id="updateColor">
+                    </div>
+                    <div class="form-group">
+                        <label>Price</label>
+                        <input type="number" class="e-input" placeholder="Enter Price" value="@Model.Price" id="updatePrice">
+                    </div>
+                    <div class="form-group">
+                        <label>Shop</label>
+                        <input readonly type="text" class="e-input" value="@Model.ShopName">
+                    </div>
+                    <button type="submit" onclick="updateModel()" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    function updateModel() {
+        let id = document.getElementById("updateId");
+        let name = document.getElementById("updateName");
+        let color = document.getElementById("updateColor");
+        let price = document.getElementById("updatePrice");
+        if(name.value == "" || color.value == "" || price.value == "")
+        {
+            alert("Enter data in fields");
+            return;
+        }
+        var model = {
+            Id: parseInt(id.value),
+            Name: name.value,
+            Color: color.value,
+            Price: parseFloat(price.value), 
+        }
+        fetch(`/Product/Update`, {
+          method: 'PUT', // or 'PUT'
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(model),
+        })
+        .then((response) => window.location.href = "/Product/index")
+    }
+</script>

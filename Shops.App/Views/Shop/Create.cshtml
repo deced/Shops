@@ -1,0 +1,51 @@
+﻿@{
+    ViewData["Title"] = "Create Shop";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="card card-waves">
+    <div class="card-header">
+        Create Shop
+    </div>
+    <div class="card-body">
+        <div class="datatable">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input class="e-input" placeholder="Enter name" id="createName">
+                    </div>
+                    <div class="form-group">
+                        <label>Address</label>
+                        <input type="text" class="e-input" placeholder="Enter Address" id="createAddress">
+                    </div>
+                    <button type="submit" onclick="createModel()" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    function createModel() {
+        let name = document.getElementById("createName");
+        let address = document.getElementById("createAddress");
+        if(name.value == "" || address.value == "")
+        {
+            alert("Enter data in fields");
+            return;
+        }
+        var model = {
+            Name: name.value,
+            Address: address.value
+        }
+        fetch(`/Shop/Create`, {
+          method: 'POST', // or 'PUT'
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(model),
+        })
+        .then((response) => window.location.href = "/Shop/index")
+    }
+</script>

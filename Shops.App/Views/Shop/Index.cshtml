@@ -1,0 +1,92 @@
+﻿@model Shops.App.Models.Shop.ShopIndexModel
+
+@{
+    ViewData["Title"] = "Shops";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container-fluid mt-5">
+    <div class="d-flex justify-content-between align-items-sm-center flex-column flex-sm-row mb-4">
+        <div class="mr-4 mb-3 mb-sm-0">
+            <h1 class="mb-0">Shops</h1>
+        </div>
+        @* @if (Context.User.IsInRole("Administrator")) *@
+        @* { *@
+            <a href="/Shop/Create/"  class="btn btn-primary p-3">
+                Create
+            </a>
+        @* } *@
+    </div>
+    <div class="card card-waves mb-4">
+        <div class="card-header">Available Shops</div>
+        <div class="card-body">
+            <div class="datatable">
+                <div class="row">
+
+                    <div class="col-lg-2">
+                        <ejs-textbox id="nameFilter" placeholder="Filter by Name"
+                            input="nameFilterChanged">
+                        </ejs-textbox>
+                    </div>
+                </div>
+            </div>
+            <br>
+            <div class="datatable">
+                <ejs-grid id="Grid" created="created" rowHeight="45" width="100%">
+                    <e-grid-pagesettings pageSize="15" pageSizes="new object[3]{15,50,100}"></e-grid-pagesettings>
+                    <e-grid-columns>
+                        <e-grid-column field="name" headerText="Name"></e-grid-column>
+                        <e-grid-column field="address" headerText="Address"></e-grid-column>
+                        <e-grid-column field="ordersCount" headerText="OrdersCount"></e-grid-column>
+                        <e-grid-column field="productsCount" headerText="ProductsCount"></e-grid-column>
+                        <e-grid-column headerTextAlign="Right" textAlign="Right" field="id" headerText="Actions" template="#template">
+                            <e-content-template>
+                                <div id="template" hidden>
+                                    <a href="/Shop/Update/${id}">Edit</a>
+                                    <text> | </text>
+                                    <a data-toggle="modal" href="#" data-target="#dialogDelete" onclick="deleteModelOpen(`${id}`)">Delete</a>
+                                    <text> | </text>
+                                    <a href="/Order/Create/${id}">New Order</a>
+                                </div>
+                            </e-content-template>
+                        </e-grid-column>
+                    </e-grid-columns>
+                </ejs-grid>
+            </div>
+        </div>
+    </div>
+</div>
+
+@{ await Html.RenderPartialAsync("PartialDelete"); }
+
+<script>
+    var nameFilter = "";
+
+    function created()
+    {
+        getShops();
+    }
+  
+    function nameFilterChanged(e){
+        nameFilter = e.value;
+        getShops();
+    }
+
+    function getShops() {
+        let grid = document.getElementById('Grid').ej2_instances[0];
+        fetch(`/Shop/Filter?name=${nameFilter}`).then((response) => response.json())
+                                                  .then((data) => grid.dataSource = data.items);
+    }
+
+    function deleteModelOpen(modelId) {
+        let id = document.getElementById("deleteId");
+        id.value = modelId;
+    }
+
+    function deleteModel() {
+        let id = document.getElementById("deleteId");
+        fetch(`/Shop/Delete?id=${id.value}`, {
+                method: 'DELETE'
+            }).then(response =>  getShops())
+    }
+
+</script>

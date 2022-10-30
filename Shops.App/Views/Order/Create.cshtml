@@ -1,0 +1,76 @@
+﻿@model Shops.App.Models.Order.CreateOrderOpenModel
+
+@{
+    ViewData["Title"] = "Create Order";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="card card-waves">
+    <div class="card-header">
+        Create Order
+    </div>
+    <div class="card-body">
+        <div class="datatable">
+            <div class="row">
+                <input id="shopId" value="@Model.ShopId" hidden=""/>
+                <div class="col-lg-12">
+                    <div class="form-group">
+                        <label>Shop</label>
+                        <input class="e-input" readonly value="@Model.ShopName">
+                    </div>
+                    <div class="form-group">
+                        <label>Shipping Address</label>
+                        <input class="e-input" placeholder="Enter Shipping Address" id="createShippingAddress">
+                    </div>
+                    <div class="form-group">
+                        <label>Address</label>
+                        <ejs-grid id="Grid" selec="rowSelected" dataSource="@Model.Products" rowHeight="45" width="100%">
+                            <e-grid-pagesettings pageSize="15" pageSizes="new object[3] { 15, 50, 100 }"></e-grid-pagesettings>
+                            <e-grid-columns>
+                                <e-grid-column type="checkbox" width="50"></e-grid-column>
+                                <e-grid-column field="Name" headerText="Name"></e-grid-column>
+                                <e-grid-column field="Color" headerText="Color"></e-grid-column>
+                                <e-grid-column field="Price" headerText="Price" template="#templatePrice">
+                                    <e-content-template>
+                                        <div id="templatePrice" hidden>${Price} USDT</div>
+                                    </e-content-template>
+                                </e-grid-column>
+                            </e-grid-columns>
+                        </ejs-grid>
+                    </div>
+                    <button type="submit" onclick="createModel()" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function rowSelected(e)
+    {
+        console.log(e);
+    }
+
+    function createModel() {
+        let shopId = document.getElementById("shopId");
+        let selectedProducts = document.getElementById('Grid').ej2_instances[0].getSelectedRecords().map(x => x.Id); 
+        let shippingAddress = document.getElementById("createShippingAddress");
+        if(shippingAddress.value == "" || selectedProducts.length == 0)
+        {
+            alert("Enter data in fields");
+            return;
+        }
+        var model = {
+            ShopId: parseInt(shopId.value),
+            ShippingAddress: shippingAddress.value,
+            ProductIds: selectedProducts
+        }
+        fetch(`/Order/Create`, {
+          method: 'POST', // or 'PUT'
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(model),
+        })
+        .then((response) => window.location.href = "/Shop/index")
+    }
+</script>
