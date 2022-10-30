@@ -16,6 +16,7 @@ namespace Shops.Api.Models.Order.Responses
         public string ShopName { get; set; }
         public decimal TotalPrice { get; set; }
         public int ProductsCount { get; set; }
+        public string ShippingAddress { get; set; }
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public OrderStatus Status { get; set; }
     }

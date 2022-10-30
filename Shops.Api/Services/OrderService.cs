@@ -133,6 +133,7 @@ namespace Shops.Api.Services
                 Id = x.Id,
                 Status = x.Status,
                 ProductsCount = x.Products.Count(),
+                ShippingAddress = x.ShippingAddress,
                 ShopName = x.Shop.Name,
                 TotalPrice = x.Products.Sum(x => x.Price)
             });

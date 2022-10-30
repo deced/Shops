@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shops.App.Base.Handlers;
 using Shops.App.Handlers.Order;
@@ -7,6 +8,7 @@ using Shops.App.Models.Order;
 
 namespace Shops.App.Controllers
 {
+    [Authorize]
     [Route("[controller]/[action]")]
     public class OrderController : Controller
     {
@@ -30,18 +32,21 @@ namespace Shops.App.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Index()
         {
             return View();
         }
 
         [HttpGet]
+        [Authorize(Roles = "admin")]
         public async Task<FilterOrderHandlerResponse> Filter([FromQuery] string shopName)
         {
             return await _filterOrderHandler.ExecuteAsync(shopName);
         }
-
+        
         [HttpGet("{shopId}")]
+        [Authorize(Roles = "adimin,user")]
         public async Task<IActionResult> Create(int shopId)
         {
             var viewModel = new CreateOrderOpenModel();
@@ -51,20 +56,23 @@ namespace Shops.App.Controllers
             viewModel.ShopName = response.ShopName;
             return View(viewModel);
         }
-
+        
         [HttpPost]
+        [Authorize(Roles = "adimin,user")]
         public async Task<IActionResult> Create([FromBody]CreateOrderModel model)
         {
             return Ok(await _createEntityHandler.ExecuteAsync("Order", model));
         }
         
         [HttpPut]
+        [Authorize(Roles = "admin")]
         public async Task<ConfirmEntityHandlerResponse> Confirm([FromQuery] int id)
         {
             return await _confirmOrderHandler.ExecuteAsync("Order",id);
         }
         
         [HttpPut]
+        [Authorize(Roles = "admin")]
         public async Task<DeclineEntityHandlerResponse> Decline([FromQuery] int id)
         {
             return await _declineOrderHandler.ExecuteAsync("Order",id);

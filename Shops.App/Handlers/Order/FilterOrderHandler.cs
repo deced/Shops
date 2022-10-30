@@ -50,6 +50,7 @@ namespace Shops.App.Handlers.Order
         public decimal TotalPrice { get; set; }
         public int ProductsCount { get; set; }
         public string Status { get; set; }
+        public string ShippingAddress { get; set; }
     }
 
     public enum FilterOrderHandlerResult

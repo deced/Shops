@@ -9,12 +9,12 @@
         <div class="mr-4 mb-3 mb-sm-0">
             <h1 class="mb-0">Products</h1>
         </div>
-        @* @if (Context.User.IsInRole("Administrator")) *@
-        @* { *@
-            <a href="/Product/Create/"  class="btn btn-primary p-3">
+        @if (Context.User.IsInRole("admin"))
+        {
+            <a href="/Product/Create/" class="btn btn-primary p-3">
                 Create
             </a>
-        @* } *@
+        }
     </div>
     <div class="card card-waves mb-4">
         <div class="card-header">Available Products</div>
@@ -42,15 +42,18 @@
                             </e-content-template>
                         </e-grid-column>
                         <e-grid-column field="shopName" headerText="ShopName"></e-grid-column>
-                        <e-grid-column headerTextAlign="Right" textAlign="Right" field="Id" headerText="Actions" template="#template">
-                            <e-content-template>
-                                <div id="template" hidden>
-                                    <a href="/Product/Update/${id}">Edit</a>
-                                    <text> | </text>
-                                    <a data-toggle="modal" href="#" data-target="#dialogDelete" onclick="deleteModelOpen(`${id}`)">Delete</a>
-                                </div>
-                            </e-content-template>
-                        </e-grid-column>
+                        @if (Context.User.IsInRole("admin"))
+                        {
+                            <e-grid-column headerTextAlign="Right" textAlign="Right" field="Id" headerText="Actions" template="#template">
+                                <e-content-template>
+                                    <div id="template" hidden>
+                                        <a href="/Product/Update/${id}">Edit</a>
+                                        <text> | </text>
+                                        <a data-toggle="modal" href="#" data-target="#dialogDelete" onclick="deleteModelOpen(`${id}`)">Delete</a>
+                                    </div>
+                                </e-content-template>
+                            </e-grid-column>
+                        }
                     </e-grid-columns>
                 </ejs-grid>
             </div>

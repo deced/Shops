@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shops.App.Base.Handlers;
 using Shops.App.Base.Models;
@@ -9,6 +10,7 @@ using Shops.App.Models.Product;
 
 namespace Shops.App.Controllers
 {
+    [Authorize(Roles = "admin")]
     [Route("[controller]/[action]")]
     public class ProductController : Controller
     {

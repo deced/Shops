@@ -34,9 +34,12 @@
                             </e-content-template>
                         </e-grid-column>
                         <e-grid-column field="status" headerText="Status"></e-grid-column>
-                        <e-grid-column headerTextAlign="Right" textAlign="Right" field="Id" headerText="Actions" template="#template">
-                            <e-content-template>
-                            <script type="text/x-template" id="template" hidden>
+                        <e-grid-column field="shippingAddress" headerText="ShippingAddress"></e-grid-column>
+                        @if (Context.User.IsInRole("admin"))
+                        {
+                            <e-grid-column headerTextAlign="Right" textAlign="Right" field="Id" headerText="Actions" template="#template">
+                                <e-content-template>
+                                    <script type="text/x-template" id="template" hidden>
                                 ${if(status == "Waiting")}
                                 <a data-toggle="modal" href="#" data-target="#dialogConfirm" onclick="confirmOpen(${id})">Confirm</a>
                                 <text> | </text>
@@ -44,8 +47,10 @@
                                 ${else}
                                 ${/if}
                             </script>
-                            </e-content-template>
-                        </e-grid-column>
+                                </e-content-template>
+
+                            </e-grid-column>
+                        }
                     </e-grid-columns>
                 </ejs-grid>
             </div>

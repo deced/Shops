@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shops.App.Base.Handlers;
 using Shops.App.Handlers.Shop;
@@ -6,6 +7,7 @@ using Shops.App.Models.Shop;
 
 namespace Shops.App.Controllers
 {
+    [Authorize(Roles = "admin,user")]
     [Route("[controller]/[action]")]
     public class ShopController : Controller
     {
@@ -40,18 +42,21 @@ namespace Shops.App.Controllers
             return await _filterShopHandler.ExecuteAsync(name);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpGet]
         public async Task<IActionResult> Create()
         {
             return View();
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody]CreateShopModel model)
         {
             return Ok(await _createEntityHandler.ExecuteAsync("Shop", model));
         }
 
+        [Authorize(Roles = "admin")]
         [HttpGet("{id}")]
         public async Task<IActionResult> Update(int id)
         {
@@ -65,12 +70,14 @@ namespace Shops.App.Controllers
             return View(viewModel);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPut]
         public async Task<IActionResult> Update([FromBody]UpdateShopModel model)
         {
             return Ok(await _updateEntityHandler.ExecuteAsync("Shop", model));
         }
 
+        [Authorize(Roles = "admin")]
         [HttpDelete]
         public async Task<IActionResult> Delete([FromQuery] int id)
         {

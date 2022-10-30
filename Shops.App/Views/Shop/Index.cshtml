@@ -9,12 +9,12 @@
         <div class="mr-4 mb-3 mb-sm-0">
             <h1 class="mb-0">Shops</h1>
         </div>
-        @* @if (Context.User.IsInRole("Administrator")) *@
-        @* { *@
-            <a href="/Shop/Create/"  class="btn btn-primary p-3">
+        @if (Context.User.IsInRole("admin"))
+        {
+            <a href="/Shop/Create/" class="btn btn-primary p-3">
                 Create
             </a>
-        @* } *@
+        }
     </div>
     <div class="card card-waves mb-4">
         <div class="card-header">Available Shops</div>
@@ -38,14 +38,21 @@
                         <e-grid-column field="address" headerText="Address"></e-grid-column>
                         <e-grid-column field="ordersCount" headerText="OrdersCount"></e-grid-column>
                         <e-grid-column field="productsCount" headerText="ProductsCount"></e-grid-column>
-                        <e-grid-column headerTextAlign="Right" textAlign="Right" field="id" headerText="Actions" template="#template">
+                        <e-grid-column headerTextAlign="Right" autoFit textAlign="Right" field="id" headerText="Actions" template="#template">
                             <e-content-template>
                                 <div id="template" hidden>
-                                    <a href="/Shop/Update/${id}">Edit</a>
-                                    <text> | </text>
-                                    <a data-toggle="modal" href="#" data-target="#dialogDelete" onclick="deleteModelOpen(`${id}`)">Delete</a>
-                                    <text> | </text>
-                                    <a href="/Order/Create/${id}">New Order</a>
+                                    @if (Context.User.IsInRole("admin"))
+                                    {
+                                        <a href="/Shop/Update/${id}">Edit</a>
+                                        <text> | </text>
+                                        <a data-toggle="modal" href="#" data-target="#dialogDelete" onclick="deleteModelOpen(`${id}`)"> Delete</a>
+                                        <text> | </text>
+                                        <a href="/Order/Create/${id}"> New Order</a>
+                                    }
+                                    else if (Context.User.IsInRole("user"))
+                                    {
+                                        <a href="/Order/Create/${id}"> New Order</a>
+                                    }
                                 </div>
                             </e-content-template>
                         </e-grid-column>

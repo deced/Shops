@@ -1,21 +1,40 @@
 ﻿using System;
 using System.Net.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Shops.App.Base.Handlers;
+using Shops.App.Context;
 using Shops.App.Handlers.Order;
 using Shops.App.Handlers.Product;
 using Shops.App.Handlers.Shop;
+using Shops.App.Models.Identity;
 
 namespace Shops.App.Configuration
 {
     public static class DependencyStartup
     {
-        public static void Configure(IServiceCollection services)
+        public static void Configure(IServiceCollection services, IConfiguration configuration)
         {
+            ConfigureDatabase(services, configuration);
+            AddIdentity(services);
             AddHandlers(services);
             AddInfrastructure(services);
         }
 
+        private static void AddIdentity(IServiceCollection services)
+        {
+            services.AddIdentity<User, IdentityRole>()
+                .AddEntityFrameworkStores<IdentityContext>();
+        }
+        
+        private static void ConfigureDatabase(IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddDbContext<IdentityContext>(options =>
+                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+        }
+        
         private static void AddInfrastructure(IServiceCollection services)
         {
             services.AddHttpClient("Api", x =>

@@ -4,12 +4,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json.Serialization;
 using Shops.App.Configuration;
+using Shops.App.Models.Identity;
 
 namespace Shops.App
 {
@@ -25,15 +28,20 @@ namespace Shops.App
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            DependencyStartup.Configure(services);
+            DependencyStartup.Configure(services, Configuration);
             services.AddControllersWithViews();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env,
+            UserManager<User> userManager,
+            RoleManager<IdentityRole> roleManager)
         {
+            SeedConfiguration.CreateRoles(roleManager).Wait();
+            SeedConfiguration.CreateUsers(userManager).Wait();
             Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense(
                 "Mgo+DSMBPh8sVXJ0S0V+XE9BdFRDXHxLeUx0RWFbb116dFVMZFpBJAtUQF1hS39TdE1iXH9ccHdRQWBc");
+            
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -49,7 +57,7 @@ namespace Shops.App
             app.UseStaticFiles();
 
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
