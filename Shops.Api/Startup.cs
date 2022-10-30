@@ -29,6 +29,7 @@ namespace Shops.Api
                 app.UseDeveloperExceptionPage();
             }
 
+            app.AddMiddlewares();
             app.UseRouting();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });

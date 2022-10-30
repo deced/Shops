@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Net.Http;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Shops.Api.Base;
 using Shops.Api.Base.DataAccess;
+using Shops.Api.Middlewares;
 using Shops.Api.Services;
 
 namespace Shops.Api.Configuration
@@ -34,6 +36,16 @@ namespace Shops.Api.Configuration
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<IShopService, ShopService>();
+        }
+        
+        public static IApplicationBuilder AddMiddlewares(this IApplicationBuilder app)
+        {
+            var currentEnvironment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            if (currentEnvironment == "Development") return app;
+
+            app.UseMiddleware<AccessTokenMiddleware>(AppConfiguration.ApiAccessToken);
+
+            return app;
         }
     }
 }
