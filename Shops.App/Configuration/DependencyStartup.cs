@@ -25,6 +25,7 @@ namespace Shops.App.Configuration
 
         private static void AddIdentity(IServiceCollection services)
         {
+            services.ConfigureApplicationCookie(options => options.LoginPath = "/Account/Login");
             services.AddIdentity<User, IdentityRole>()
                 .AddEntityFrameworkStores<IdentityContext>();
         }

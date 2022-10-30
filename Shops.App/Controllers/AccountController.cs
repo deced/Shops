@@ -47,6 +47,8 @@ namespace Shops.App.Controllers
         [HttpGet]
         public IActionResult Login(string returnUrl = null)
         {
+            if (User.Identity.IsAuthenticated)
+                return RedirectToAction("Index", "Shop");
             return View(new LoginViewModel { ReturnUrl = returnUrl });
         }
  
