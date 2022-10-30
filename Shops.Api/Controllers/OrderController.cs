@@ -32,6 +32,12 @@ namespace Shops.Api.Controllers
            return await _orderService.GetCreateModel(shopId);
         }
 
+        [HttpGet("{id}")]
+        public async Task<ShowOrderOpenModelResponse> GetShowModel(int id)
+        {
+            return await _orderService.GetShowModel(id);
+        }
+
         [HttpPost]
         public async Task<CreateEntityResponse> Create([FromBody] CreateOrderModel model)
         {

@@ -13,10 +13,10 @@ namespace Shops.Api.Services
     {
         Task<CreateEntityResponse> Create(CreateOrderModel model);
         Task<OrderCreateOpenModelResponse> GetCreateModel(int shopId);
+        Task<ShowOrderOpenModelResponse> GetShowModel(int id);
         Task<ConfirmEntityResponse> Confirm(int id);
         Task<DeclineEntityResponse> Decline(int id);
         Task<FilterOrderResponse> Filter(string shopName);
-        Task<DeleteEntityResponse> Delete(int id);
     }
 
     public class OrderService : IOrderService
@@ -89,6 +89,31 @@ namespace Shops.Api.Services
             return response;
         }
 
+        public async Task<ShowOrderOpenModelResponse> GetShowModel(int id)
+        {
+            var response = new ShowOrderOpenModelResponse();
+            var order = await _orderRepository.GetByIdWithIncludeAsync(id,
+                x => x.Products,
+                x => x.Shop);
+            if (order == null)
+            {
+                response.Result = ShowOrderOpenModelResponseResult.NoSuchOrder;
+                return response;
+            }
+
+            response.OrderId = order.Id;
+            response.ShopName = order.Shop.Name;
+            response.ShippingAddress = order.ShippingAddress;
+            response.Products = order.Products.Select(x => new OrderedProductModel()
+            {
+                Color = x.Color,
+                Name = x.Name,
+                Price = x.Price
+            });
+            response.Result = ShowOrderOpenModelResponseResult.Success;
+            return response;
+        }
+
         public async Task<ConfirmEntityResponse> Confirm(int id)
         {
             var response = new ConfirmEntityResponse();
@@ -139,21 +164,6 @@ namespace Shops.Api.Services
             });
             response.Items = response.Items.OrderBy(x => x.Status);
             response.Result = FilterOrderResponseResult.Success;
-            return response;
-        }
-
-        public async Task<DeleteEntityResponse> Delete(int id)
-        {
-            var response = new DeleteEntityResponse();
-            var order = await _orderRepository.GetByIdAsync(id);
-            if (order == null)
-            {
-                response.Result = DeleteEntityResponseResult.NoSuchEntity;
-                return response;
-            }
-
-            await _orderRepository.DeleteAsync(order);
-            response.Result = DeleteEntityResponseResult.Success;
             return response;
         }
     }

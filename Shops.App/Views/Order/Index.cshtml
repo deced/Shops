@@ -35,6 +35,13 @@
                         </e-grid-column>
                         <e-grid-column field="status" headerText="Status"></e-grid-column>
                         <e-grid-column field="shippingAddress" headerText="ShippingAddress"></e-grid-column>
+                        <e-grid-column field="Id" headerText="FullInfo" template="#templateActions">
+                            <e-content-template>
+                                <div id="templateActions" hidden>
+                                    <a href="/Order/Show/${id}">Show</a>
+                                </div>
+                            </e-content-template>
+                        </e-grid-column>
                         @if (Context.User.IsInRole("admin"))
                         {
                             <e-grid-column headerTextAlign="Right" textAlign="Right" field="Id" headerText="Actions" template="#template">

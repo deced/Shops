@@ -9,24 +9,29 @@ namespace Shops.App.Controllers
     {
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
- 
-        public AccountController(UserManager<User> userManager, SignInManager<User> signInManager)
+        private readonly RoleManager<IdentityRole> _roleManager;
+
+        public AccountController(RoleManager<IdentityRole> roleManager,
+            UserManager<User> userManager,
+            SignInManager<User> signInManager)
         {
+            _roleManager = roleManager;
             _userManager = userManager;
             _signInManager = signInManager;
         }
+
         [HttpGet]
         public IActionResult Register()
         {
             return View();
         }
-        
+
         [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
-            if(ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                User user = new User { Email = model.Email, UserName = model.Email};
+                User user = new User { Email = model.Email, UserName = model.Email };
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
@@ -41,9 +46,10 @@ namespace Shops.App.Controllers
                     ModelState.AddModelError(string.Empty, error.Description);
                 }
             }
+
             return View(model);
         }
-        
+
         [HttpGet]
         public IActionResult Login(string returnUrl = null)
         {
@@ -51,31 +57,30 @@ namespace Shops.App.Controllers
                 return RedirectToAction("Index", "Shop");
             return View(new LoginViewModel { ReturnUrl = returnUrl });
         }
- 
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
             if (ModelState.IsValid)
             {
-                var result = 
+                var result =
                     await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
                 if (result.Succeeded)
                 {
-                    if (!string.IsNullOrEmpty(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))
-                    {
-                        return Redirect(model.ReturnUrl);
-                    }
+                    var user = await _userManager.FindByEmailAsync(model.Email);
+
+                    if (await _userManager.IsInRoleAsync(user, "courier"))
+                        return RedirectToAction("Index", "Order");
                     return RedirectToAction("Index", "Shop");
                 }
-                else
-                {
-                    ModelState.AddModelError("", "Неправильный логин и (или) пароль");
-                }
+
+                ModelState.AddModelError("", "Неправильный логин и (или) пароль");
             }
+
             return View(model);
         }
- 
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()

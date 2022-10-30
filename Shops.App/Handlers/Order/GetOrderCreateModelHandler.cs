@@ -49,7 +49,7 @@ namespace Shops.App.Handlers.Order
     public enum GetOrderCreateModelHandlerResult
     {
         Success,
-        NoSuchShop,
+        NoSuchOrder,
         Error
     }
 }
